@@ -20,4 +20,6 @@ public interface CsvDataMapper {
             @Result(property = "dataLine", column = "data_line", jdbcType = JdbcType.DOUBLE)
     })
     List<CsvData> quaryALL();
+
+    void batchInsert1(List<String> list);
 }

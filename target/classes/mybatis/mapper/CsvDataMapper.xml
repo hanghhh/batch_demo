@@ -7,4 +7,11 @@
         INSERT INTO lzh_test (data_line) VALUES (#{dataLine})
     </insert>
 
+    <insert id="batchInsert1" parameterType="ArrayList">
+        INSERT INTO lzh_test (data_line) VALUES
+        <foreach collection="list" item="dataLine" separator=",">
+            (#{dataLine})
+        </foreach>
+    </insert>
+
 </mapper>
