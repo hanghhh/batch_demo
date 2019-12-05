@@ -1,6 +1,5 @@
 package com.lzh.demo.service;
 
-import com.lzh.demo.config.CsvJobListener;
 import com.lzh.demo.entity.CsvData;
 import com.lzh.demo.mapper.CsvDataMapper;
 import org.slf4j.Logger;
@@ -11,8 +10,8 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -27,6 +26,11 @@ public class CsvDataServiceImpl implements CsvDataService{
 
     //上次文件大小
     private long pointer = 0;
+    //行数记录
+    private long lastLine = 0;
+    //每次要读取得行数
+    private int perSize = 6000000;
+
     ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 
 
@@ -40,8 +44,8 @@ public class CsvDataServiceImpl implements CsvDataService{
     @Qualifier("csvDataJob")
     private Job csvDataJob;
 
-    //社工支撑
-    private static final String BASE_DIR = "D:/";
+    @Value("${fullPathFile}")
+    private String fullPathFile;
 
 
 
@@ -57,10 +61,9 @@ public class CsvDataServiceImpl implements CsvDataService{
 
     @Override
     public boolean startJob(String file) {
-        CsvJobListener.filePath = BASE_DIR + file;
         boolean res = true;
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("path", BASE_DIR + file).toJobParameters();
+                .addString("path", fullPathFile).toJobParameters();
         try {
             jobLauncher.run(csvDataJob, jobParameters);
         } catch (Exception e) {
@@ -72,10 +75,8 @@ public class CsvDataServiceImpl implements CsvDataService{
 
     @Override
     public String run(String path) {
-        if(!StringUtils.hasText(path)) {
-            path = "D:/111.csv";
-        }
-        final File tmpLogFile = new File(path);
+        System.out.println(fullPathFile);
+        final File tmpLogFile = new File(fullPathFile);
         try {
             realtimeShowLog(tmpLogFile);
         } catch (Exception e) {
