@@ -40,6 +40,7 @@ public class CsvDataServiceImpl implements CsvDataService{
     @Qualifier("csvDataJob")
     private Job csvDataJob;
 
+    //社工支撑
     private static final String BASE_DIR = "D:/";
 
 
